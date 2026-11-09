@@ -1296,6 +1296,15 @@ class DynamoExporterNewOpsetsTest(common_utils.TestCase, _WithExport):
         onnx_program = self.export(RMSNormModel2D(), (x,), opset_version=23)
         onnx_testing.assert_onnx_program(onnx_program)
 
+    def test_rms_norm_float64_default_eps(self):
+        class RMSNormModel(torch.nn.Module):
+            def forward(self, x):
+                return torch.nn.functional.rms_norm(x, [8])
+
+        x = torch.full((2, 8), 1e-4, dtype=torch.float64)
+        onnx_program = self.export(RMSNormModel(), (x,), opset_version=23)
+        onnx_testing.assert_onnx_program(onnx_program, args=(x,))
+
     def test_rms_norm_with_weight(self):
         """Test RMS normalization with weight parameter."""
 

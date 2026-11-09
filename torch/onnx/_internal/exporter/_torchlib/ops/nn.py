@@ -64,9 +64,11 @@ def aten_rms_norm(
 ) -> TFloat:
     """rms_norm(Tensor input, SymInt[] normalized_shape, Tensor? weight=None, float? eps=None) -> Tensor"""
 
-    # Default eps value if not provided
     if eps is None:
-        eps = torch.finfo(torch.float).eps  # Observed from decomp
+        eps_dtype = (
+            torch.float64 if input.dtype == ir.DataType.DOUBLE else torch.float32
+        )
+        eps = torch.finfo(eps_dtype).eps
 
     # Calculate axis: the first normalization dimension
     # For normalized_shape with D dimensions, normalize over last D dimensions
